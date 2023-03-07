@@ -21,9 +21,9 @@ FROM wso2/wso2mi:latest
 
 
 ARG USER=wso2mi
-ARG USER_ID=1001
+ARG USER_ID=10001
 ARG USER_GROUP=wso2mi
-ARG USER_GROUP_ID=1001
+ARG USER_GROUP_ID=10001
 ARG USER_HOME=/home/${USER}
 
 USER root
@@ -33,7 +33,7 @@ RUN \
 
 RUN chown -R ${USER_GROUP}:${USER} "${WORKING_DIRECTORY}"/
 
-USER 1001
+USER 10001
 RUN chmod +x "${WORKING_DIRECTORY}"/docker-entrypoint.sh
 
 COPY *.car "${WSO2_SERVER_HOME}"/repository/deployment/server/carbonapps/
