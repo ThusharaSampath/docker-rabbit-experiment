@@ -36,9 +36,14 @@ RUN chown -R ${USER_GROUP}:${USER} "${WORKING_DIRECTORY}"/
 USER 10001
 RUN chmod +x "${WORKING_DIRECTORY}"/docker-entrypoint.sh
 
-COPY *.car "${WSO2_SERVER_HOME}"/repository/deployment/server/carbonapps/
-RUN ls "${WSO2_SERVER_HOME}"/repository/deployment/server/carbonapps/
-COPY ./libs/*.jar "${WSO2_SERVER_HOME}"/lib
-RUN ls "${WSO2_SERVER_HOME}"/lib
+COPY ./configs/*deployment.toml ./libs/*.jar *.car Dockerfile /tmp/
+
+RUN find /tmp -maxdepth 1 -name "*.car" -exec cp -v {} "${WSO2_SERVER_HOME}/repository/deployment/server/carbonapps/" \;
+
+RUN find /tmp -maxdepth 1 -name "*.jar" -exec cp -v {} "${WSO2_SERVER_HOME}/lib/" \;
+
+RUN if [ -f /tmp/deployment.toml ]; then \
+    cp -vf /tmp/deployment.toml "${WSO2_SERVER_HOME}/conf/deployment.toml"; \
+    else echo "Custom deployment.toml is not available"; fi
 
 ENTRYPOINT ["/home/wso2carbon/docker-entrypoint.sh"]
