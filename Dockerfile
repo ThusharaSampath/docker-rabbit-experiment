@@ -1,9 +1,12 @@
+FROM python:3
 
+WORKDIR /app
 
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-FROM python:3.8 
-ADD consumer.py .
+COPY . .
 
-USER 10001
-RUN pip install pika ${USER}
-CMD ["python","-u","consumer.py"]
+RUN chmod -x /app/consumer.py;
+
+CMD [ "python", "-u", "/app/consumer.py" ]
