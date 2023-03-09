@@ -8,6 +8,7 @@ password = os.getenv("PASSWORD")
 queueName = "TestQueue"
 exchange = 'choreo'
 
+print(username, " ", vhost, " ", host, " ", password)
 if (username != None and vhost != None and host != None and password != None):
 
     credentials = pika.PlainCredentials(username, password)
@@ -29,7 +30,6 @@ if (username != None and vhost != None and host != None and password != None):
     channel.basic_consume(
         queue=queueName, on_message_callback=callbackFunctionForQueueA, auto_ack=True)
 
-    print(username, " ", vhost, " ", host, " ", password)
     print("Starting consumer session..")
 
     # this will be command for starting the consumer session
