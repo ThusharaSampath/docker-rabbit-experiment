@@ -1,20 +1,37 @@
 import pika
 import os
 
-credentials = pika.PlainCredentials('cgsqdwsf','vFm4y8aPT7I0y0wGA2W3N31yBfhI4aoe')
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='dingo.rmq.cloudamqp.com', port='5672', virtual_host="cgsqdwsf",credentials= credentials,socket_timeout=5))
+username = os.getenv("USERNAME")
+vhost = os.getenv("VHOST")
+host = os.getenv("HOST")
+password = os.getenv("PASSWORD")
+queueName = "TestQueue"
+exchange = 'choreo'
 
-channel = connection.channel()
-channel.exchange_declare('test', durable=True, exchange_type='topic')
+if (username != None and vhost != None and host != None and password != None):
 
-#defining callback functions responding to corresponding queue callbacks
-def callbackFunctionForQueueA(ch,method,properties,body):
- print('Got a message from Queue A: ', body)
+    credentials = pika.PlainCredentials(username, password)
+    connection = pika.BlockingConnection(pika.ConnectionParameters(
+        host=host, port='5672', virtual_host=vhost, credentials=credentials, socket_timeout=5))
 
-#Attaching consumer callback functions to respective queues that we wrote above
-channel.basic_consume(queue='A', on_message_callback=callbackFunctionForQueueA, auto_ack=True)
+    channel = connection.channel()
+    channel.exchange_declare('choreo', durable=True, exchange_type='topic')
 
-#this will be command for starting the consumer session
-print("Starting consumer session..")
-print(os.getenv("USERNAME"))
-channel.start_consuming()
+    # create a queue in rabbitMQ
+    channel.queue_declare(queue= queueName)
+
+    # defining callback function to incoming queue messages 
+    def callbackFunctionForQueueA(ch, method, properties, body):
+        print('Message is received from Queue {}. Message is : '.format(
+            queueName), body)
+
+    # attaching consumer callback function to the queue
+    channel.basic_consume(
+        queue=queueName, on_message_callback=callbackFunctionForQueueA, auto_ack=True)
+
+    print("Starting consumer session..")
+
+    # this will be command for starting the consumer session
+    channel.start_consuming()
+else:
+    print("One or many environment variables was/were not set.")
