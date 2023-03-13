@@ -8,7 +8,6 @@ password = os.getenv("PASSWORD")
 queueName = "TestQueue"
 exchange = 'choreo'
 
-print(username, " ", vhost, " ", host, " ", password)
 if (username != None and vhost != None and host != None and password != None):
 
     credentials = pika.PlainCredentials(username, password)
